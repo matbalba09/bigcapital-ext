@@ -20,7 +20,7 @@ COPY --chown=node:node shared/pdf-templates/package.json ./shared/pdf-templates/
 COPY --chown=node:node shared/email-components/package.json ./shared/email-components/
 
 # Install all dependencies (including devDependencies for build)
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # Copy source code
 COPY --chown=node:node ./packages/server ./packages/server
@@ -62,7 +62,7 @@ COPY --chown=nodejs:nodejs .husky ./.husky
 # Install only production dependencies
 # Install husky temporarily so prepare script can run, then remove it
 RUN pnpm add -D -w husky && \
-    pnpm install --prod --frozen-lockfile && \
+    pnpm install --prod --no-frozen-lockfile && \
     pnpm remove -w husky && \
     # Remove build dependencies to reduce image size
     apk del python3 build-base
