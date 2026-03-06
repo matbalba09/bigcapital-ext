@@ -29,7 +29,7 @@ COPY --chown=node:node ./shared/pdf-templates ./shared/pdf-templates
 COPY --chown=node:node ./shared/email-components ./shared/email-components
 
 # Build webapp package
-RUN pnpm run build:webapp
+RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm run build:webapp
 
 # Stage 2: Nginx
 FROM nginx:alpine

@@ -23,10 +23,10 @@ export default defineConfig(({ mode }) => {
   const port = Number(env.PORT) || 4000;
   const plugins: PluginOption[] = [
     react(),
-    legacy({
-      targets: ['defaults', 'not IE 11'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
-    }),
+    // legacy({
+    //   targets: ['defaults', 'not IE 11'],
+    //   additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+    // }),
   ];
 
   return {
