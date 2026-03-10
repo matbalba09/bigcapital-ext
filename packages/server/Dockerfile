@@ -16,14 +16,19 @@ ENV PYTHON=/usr/bin/python3
 COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml lerna.json ./
 COPY --chown=node:node packages/server/package.json ./packages/server/
 COPY --chown=node:node shared ./shared
+COPY --chown=node:node shared/bigcapital-utils/package.json ./shared/bigcapital-utils/
+COPY --chown=node:node shared/pdf-templates/package.json ./shared/pdf-templates/
+COPY --chown=node:node shared/email-components/package.json ./shared/email-components/
+COPY --chown=node:node shared/sdk-ts/package.json ./shared/sdk-ts/
 
 # Install all dependencies (including devDependencies for build)
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # Copy source code
 COPY --chown=node:node ./packages/server ./packages/server
 
-# Build NestJS application
+# Build NestJS application with increased memory
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm run build:server --skip-nx-cache
 
 # Stage 2: Production
@@ -38,27 +43,12 @@ RUN npm install -g pnpm@9.0.5
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Install build dependencies for native modules (bcrypt, etc.)
-RUN apk add --no-cache python3 build-base
+# Copy everything from builder (including node_modules with all dependencies)
+COPY --from=builder --chown=nodejs:nodejs /app /app
 
-# Set Python environment
-ENV PYTHON=/usr/bin/python3
-
-# Copy package files for production dependency installation
-COPY --chown=nodejs:nodejs package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY --chown=nodejs:nodejs packages/server/package.json ./packages/server/
-COPY --chown=nodejs:nodejs shared ./shared
-
-# Copy .husky directory (needed for husky install command)
-COPY --chown=nodejs:nodejs .husky ./.husky
-
-# Install only production dependencies
-# Install husky temporarily so prepare script can run, then remove it
-RUN pnpm add -D -w husky && \
-    pnpm install --prod --frozen-lockfile && \
-    pnpm remove -w husky && \
-    # Remove build dependencies to reduce image size
-    apk del python3 build-base
+# Remove devDependencies to reduce image size
+RUN rm -rf node_modules/.cache && \
+    pnpm prune --prod
 
 # Copy built application from builder stage
 COPY --from=builder --chown=nodejs:nodejs /app/packages/server/dist ./packages/server/dist

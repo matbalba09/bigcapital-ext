@@ -3,17 +3,31 @@
 version: '3.3'
 
 services:
-  webapp:
-    container_name: bigcapital-webapp
-    image: bigcapital-webapp:local
+  proxy:
+    image: envoyproxy/envoy:v1.30-latest
+    depends_on:
+      - server
+      - webapp
+    ports:
+      - '${PUBLIC_PROXY_PORT:-80}:80'
+      - '${PUBLIC_PROXY_SSL_PORT:-443}:443'
+    tty: true
+    volumes:
+      - ./docker/envoy/envoy.yaml:/etc/envoy/envoy.yaml
     restart: on-failure
     networks:
-      - bigcapital-network
-      - proxy-tier
+      - bigcapital_network
+
+  webapp:
+    container_name: bigcapital-webapp
+    image: bigcapitalhq/webapp:latest
+    restart: on-failure
+    networks:
+      - bigcapital_network
 
   server:
     container_name: bigcapital-server
-    image: bigcapital-server:local
+    image: bigcapitalhq/server:latest
     expose:
       - '3000'
     links:
@@ -24,8 +38,7 @@ services:
       - redis
     restart: on-failure
     networks:
-      - bigcapital-network
-      - proxy-tier
+      - bigcapital_network
     environment:
       # Mail
       - MAIL_HOST=${MAIL_HOST}
@@ -131,7 +144,7 @@ services:
     depends_on:
       - mysql
     networks:
-      - bigcapital-network
+      - bigcapital_network
 
   mysql:
     container_name: bigcapital-mysql
@@ -148,7 +161,7 @@ services:
     expose:
       - '3306'
     networks:
-      - bigcapital-network
+      - bigcapital_network
 
   redis:
     container_name: bigcapital-redis
@@ -160,15 +173,14 @@ services:
     volumes:
       - redis:/data
     networks:
-      - bigcapital-network
+      - bigcapital_network
 
   gotenberg:
     image: gotenberg/gotenberg:7
-    container_name: bigcapital-gotenberg-1
     expose:
       - '9000'
     networks:
-      - bigcapital-network
+      - bigcapital_network
 
 # Volumes
 volumes:
@@ -182,7 +194,5 @@ volumes:
 
 # Networks
 networks:
-  bigcapital-network:
-    external: true
-  proxy-tier:
-    external: true
+  bigcapital_network:
+    driver: bridge

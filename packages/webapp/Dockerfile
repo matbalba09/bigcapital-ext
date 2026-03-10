@@ -16,15 +16,20 @@ ENV PYTHON=/usr/bin/python3
 COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml lerna.json ./
 COPY --chown=node:node packages/webapp/package.json ./packages/webapp/
 COPY --chown=node:node shared ./shared
+COPY --chown=node:node shared/bigcapital-utils/package.json ./shared/bigcapital-utils/
+COPY --chown=node:node shared/pdf-templates/package.json ./shared/pdf-templates/
+COPY --chown=node:node shared/email-components/package.json ./shared/email-components/
+COPY --chown=node:node shared/sdk-ts/package.json ./shared/sdk-ts/
 
 # Install all dependencies (including devDependencies for build)
-RUN pnpm install
+# Use --no-frozen-lockfile to apply pnpm overrides
+RUN pnpm install --no-frozen-lockfile
 
 # Copy source code for webapp and dependencies
 COPY --chown=node:node ./packages/webapp ./packages/webapp
 
 # Build webapp package
-RUN pnpm run build:webapp
+RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm run build:webapp
 
 # Stage 2: Nginx
 FROM nginx:alpine
