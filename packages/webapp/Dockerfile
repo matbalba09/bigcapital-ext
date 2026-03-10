@@ -18,9 +18,11 @@ COPY --chown=node:node packages/webapp/package.json ./packages/webapp/
 COPY --chown=node:node shared/bigcapital-utils/package.json ./shared/bigcapital-utils/
 COPY --chown=node:node shared/pdf-templates/package.json ./shared/pdf-templates/
 COPY --chown=node:node shared/email-components/package.json ./shared/email-components/
+COPY --chown=node:node shared/sdk-ts/package.json ./shared/sdk-ts/
 
 # Install all dependencies (including devDependencies for build)
-RUN pnpm install
+# Use --no-frozen-lockfile to apply pnpm overrides
+RUN pnpm install --no-frozen-lockfile
 
 # Copy source code for webapp and dependencies
 COPY --chown=node:node ./packages/webapp ./packages/webapp
