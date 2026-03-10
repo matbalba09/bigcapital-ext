@@ -4,7 +4,7 @@ FROM node:18.16.0-alpine AS builder
 WORKDIR /app
 
 # Install pnpm
-RUN npm install -g pnpm@8.10.2
+RUN npm install -g pnpm@9.0.5
 
 # Install build dependencies
 RUN apk add --no-cache python3 build-base chromium
@@ -15,6 +15,7 @@ ENV PYTHON=/usr/bin/python3
 # Copy package files for dependency installation
 COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml lerna.json ./
 COPY --chown=node:node packages/server/package.json ./packages/server/
+COPY --chown=node:node shared ./shared
 COPY --chown=node:node shared/bigcapital-utils/package.json ./shared/bigcapital-utils/
 COPY --chown=node:node shared/pdf-templates/package.json ./shared/pdf-templates/
 COPY --chown=node:node shared/email-components/package.json ./shared/email-components/
@@ -25,9 +26,6 @@ RUN pnpm install --no-frozen-lockfile
 
 # Copy source code
 COPY --chown=node:node ./packages/server ./packages/server
-COPY --chown=node:node ./shared/bigcapital-utils ./shared/bigcapital-utils
-COPY --chown=node:node ./shared/pdf-templates ./shared/pdf-templates
-COPY --chown=node:node ./shared/email-components ./shared/email-components
 
 # Build NestJS application with increased memory
 ENV NODE_OPTIONS="--max-old-space-size=4096"
@@ -38,8 +36,8 @@ FROM node:18.16.0-alpine AS production
 
 WORKDIR /app
 
-# Install pnpm for pruning devDependencies
-RUN npm install -g pnpm@8.10.2
+# Install pnpm for production
+RUN npm install -g pnpm@9.0.5
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -63,10 +61,8 @@ COPY --from=builder --chown=nodejs:nodejs /app/packages/server/static ./packages
 # Copy database migration files (needed for running migrations)
 COPY --from=builder --chown=nodejs:nodejs /app/packages/server/src/database ./packages/server/src/database
 
-# Copy built shared packages (dist folders and package.json for module resolution)
-COPY --from=builder --chown=nodejs:nodejs /app/shared/bigcapital-utils/dist ./shared/bigcapital-utils/dist
-COPY --from=builder --chown=nodejs:nodejs /app/shared/pdf-templates/dist ./shared/pdf-templates/dist
-COPY --from=builder --chown=nodejs:nodejs /app/shared/email-components/dist ./shared/email-components/dist
+# Copy all shared packages from builder so newly added shared packages are included automatically
+COPY --from=builder --chown=nodejs:nodejs /app/shared ./shared
 
 # Set runtime environment variables (these should be provided at runtime via docker-compose or k8s)
 ENV NODE_ENV=production
