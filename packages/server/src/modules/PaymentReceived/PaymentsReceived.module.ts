@@ -99,7 +99,7 @@ import { ValidateBulkDeletePaymentReceivedService } from './ValidateBulkDeletePa
     BullModule.registerQueue({ name: SEND_PAYMENT_RECEIVED_MAIL_QUEUE }),
     BullBoardModule.forFeature({
       name: SEND_PAYMENT_RECEIVED_MAIL_QUEUE,
-      adapter: BullMQAdapter,
+      adapter: BullMQAdapter as any,
     }),
   ],
 })
