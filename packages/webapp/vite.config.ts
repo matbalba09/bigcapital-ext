@@ -64,6 +64,13 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: ['import', 'legacy-js-api', 'global-builtin', 'color-functions', 'if-function'],
+        },
+      },
+    },
     optimizeDeps: {
       esbuildOptions: {
         plugins: [fixReactVirtualized as any],

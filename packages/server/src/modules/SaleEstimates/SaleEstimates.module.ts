@@ -58,7 +58,7 @@ import { SendSaleEstimateMailProcess } from './processes/SendSaleEstimateMail.pr
     BullModule.registerQueue({ name: SendSaleEstimateMailQueue }),
     BullBoardModule.forFeature({
       name: SendSaleEstimateMailQueue,
-      adapter: BullMQAdapter,
+      adapter: BullMQAdapter as any,
     }),
   ],
   controllers: [SaleEstimatesController],
