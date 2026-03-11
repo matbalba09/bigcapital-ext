@@ -66,7 +66,7 @@ import { ValidateBulkDeleteSaleReceiptsService } from './ValidateBulkDeleteSaleR
     BullModule.registerQueue({ name: SendSaleReceiptMailQueue }),
     BullBoardModule.forFeature({
       name: SendSaleReceiptMailQueue,
-      adapter: BullMQAdapter,
+      adapter: BullMQAdapter as any,
     }),
   ],
   providers: [
