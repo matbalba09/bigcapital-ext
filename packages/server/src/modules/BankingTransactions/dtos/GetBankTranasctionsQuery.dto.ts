@@ -31,12 +31,12 @@ export class GetBankTransactionsQueryDto {
   })
   pageSize: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @ApiProperty({
     description: 'Bank account ID',
-    required: true,
+    required: false,
     type: Number,
     example: 1
   })
