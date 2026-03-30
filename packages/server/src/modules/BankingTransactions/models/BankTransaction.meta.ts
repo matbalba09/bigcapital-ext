@@ -37,29 +37,11 @@ export const BankTransactionMeta = {
     },
   },
   columns: {
-    date: {
-      name: 'Date',
-      type: 'text',
-    },
-    transactionNumber: {
-      name: 'Transaction #',
-      type: 'text',
-    },
-    description: {
-      name: 'Description',
-      type: 'text',
-    },
-    amount: {
-      name: 'Amount',
-      type: 'text',
-    },
-    transactionType: {
-      name: 'Type',
-      type: 'text',
-    },
-    status: {
-      name: 'Status',
-      type: 'text',
-    },
+    date: { name: 'Date', type: 'text' },
+    transactionNumber: { name: 'Transaction #', type: 'text' },
+    description: { name: 'Description', type: 'text' },
+    amount: { name: 'Amount', type: 'text' },
+    transactionType: { name: 'Type', type: 'text' },
+    status: { name: 'Status', type: 'text' },
   },
 };
