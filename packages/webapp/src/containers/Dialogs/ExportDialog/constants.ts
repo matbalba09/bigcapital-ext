@@ -1,5 +1,6 @@
 export const ExportResources = [
   { value: 'account', text: 'Accounts' },
+  { value: 'bank_transaction', text: 'Bank Transactions' },
   { value: 'item', text: 'Items' },
   { value: 'item_category', text: 'Item Categories' },
   { value: 'customer', text: 'Customers' },

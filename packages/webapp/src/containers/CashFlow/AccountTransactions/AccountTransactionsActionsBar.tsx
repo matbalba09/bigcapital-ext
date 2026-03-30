@@ -36,6 +36,7 @@ import { useRefreshCashflowTransactions } from '@/hooks/query';
 import { useAccountTransactionsContext } from './AccountTransactionsProvider';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useAppShellContext } from '@/components/AppShell/AppContentShell/AppContentShellProvider';
+import { useDownloadExportPdf } from '@/hooks/query/FinancialReports/use-export-pdf';
 
 import { withDialogActions } from '@/containers/Dialog/withDialogActions';
 import { withSettings } from '@/containers/Settings/withSettings';
@@ -144,6 +145,19 @@ function AccountTransactionsActionsBar({
   // Handle the refresh button click.
   const handleRefreshBtnClick = () => {
     refresh(accountId);
+  };
+
+  // Exports pdf document.
+  const { downloadAsync: downloadExportPdf } = useDownloadExportPdf();
+
+  // Handle the print button click.
+  const handlePrintBtnClick = () => {
+    downloadExportPdf({ resource: 'BankTransaction' });
+  };
+
+  // Handle the export button click.
+  const handleExportBtnClick = () => {
+    openDialog(DialogsName.Export, { resource: 'bank_transaction' });
   };
 
   const {
@@ -256,11 +270,13 @@ function AccountTransactionsActionsBar({
             className={Classes.MINIMAL}
             icon={<Icon icon="print-16" iconSize={16} />}
             text={<T id={'print'} />}
+            onClick={handlePrintBtnClick}
           />
           <Button
             className={Classes.MINIMAL}
             icon={<Icon icon="file-export-16" iconSize={16} />}
             text={<T id={'export'} />}
+            onClick={handleExportBtnClick}
           />
           <Button
             className={Classes.MINIMAL}
@@ -317,10 +333,12 @@ function AccountTransactionsActionsBar({
                 <MenuItem
                   icon={<Icon icon="print-16" iconSize={16} />}
                   text={<T id={'print'} />}
+                  onClick={handlePrintBtnClick}
                 />
                 <MenuItem
                   icon={<Icon icon="file-export-16" iconSize={16} />}
                   text={<T id={'export'} />}
+                  onClick={handleExportBtnClick}
                 />
                 <MenuItem
                   icon={<Icon icon="file-import-16" iconSize={16} />}

@@ -1,5 +1,5 @@
 import { Model } from 'objection';
-import { BaseModel } from '@/models/Model';
+import { TenantBaseModel } from '@/modules/System/models/TenantBaseModel';
 import {
   getCashflowAccountTransactionsTypes,
   getCashflowTransactionType,
@@ -7,8 +7,13 @@ import {
 import { CASHFLOW_DIRECTION, CASHFLOW_TRANSACTION_TYPE } from '../constants';
 import { BankTransactionLine } from './BankTransactionLine';
 import { Account } from '@/modules/Accounts/models/Account.model';
+import { ExportableModel } from '../../Export/decorators/ExportableModel.decorator';
+import { InjectModelMeta } from '@/modules/Tenancy/TenancyModels/decorators/InjectModelMeta.decorator';
+import { BankTransactionMeta } from './BankTransaction.meta';
 
-export class BankTransaction extends BaseModel {
+@ExportableModel()
+@InjectModelMeta(BankTransactionMeta)
+export class BankTransaction extends TenantBaseModel {
   transactionType: string;
   amount: number;
   exchangeRate: number;
